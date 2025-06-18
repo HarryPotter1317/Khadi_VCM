@@ -1,0 +1,33 @@
+/* Dashboard Layout */
+.dashboard-container {
+    min-height: 100vh;
+    background: #f5f7fa;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  .dashboard-content {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .dashboard-main {
+    grid-column: 1;
+  }
+  
+  .dashboard-sidebar {
+    grid-column: 2;
+  }
+  
+  @media (max-width: 1024px) {
+    .dashboard-content {
+      grid-template-columns: 1fr;
+    }
+    
+    .dashboard-sidebar {
+      grid-column: 1;
+    }
+  }
