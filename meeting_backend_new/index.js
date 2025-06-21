@@ -30,7 +30,6 @@ app.post('/api/meetings/decline', (req, res) => {
     res.json({ message: 'Meeting declined' });
 });
 
-
 app.listen(5000, ()=>{
     console.log('Server started');
 });

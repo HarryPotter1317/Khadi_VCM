@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import './App.css';
 import axios from 'axios';
+import '../App.css';
+import { useNavigate } from 'react-router-dom';
+import Dashboard from './Dashboard';
 
 const URL = 'http://localhost:5000';
 
-function App() {
+function Home() {
   const [meetings, setMeetings] = useState([]);
   const [selectedMeeting, setSelectedMeeting] = useState(null);
   const [approvedMeetings, setApprovedMeetings] = useState([]);
   const [declinedMeetings, setDeclinedMeetings] = useState([]);
   const [showApproved, setShowApproved] = useState(false);
   const [showDeclined, setShowDeclined] = useState(false);
+  const navigate = useNavigate(); // ✅ Needed for navigation
 
   const simulateMeetingRequest = async () => {
     const newMeeting = {
@@ -27,12 +30,16 @@ function App() {
       const res = await axios.post(`${URL}/api/meetings`, newMeeting);
       setMeetings([...meetings, res.data.newMeeting]);
     } catch (err) {
-      console.error('Error adding meeting:', err);
+      console.log('Error adding meeting');
     }
   };
 
   const handleApprove = async () => {
-    if (!selectedMeeting) return;
+    if (!selectedMeeting) {
+      console.error('No meeting selected');
+      return;
+    }
+
     try {
       await axios.post(`${URL}/api/meetings/approve`, { id: selectedMeeting.id });
       const updatedMeeting = { ...selectedMeeting, status: 'APPROVED', approvedAt: new Date() };
@@ -44,7 +51,7 @@ function App() {
     }
   };
 
-  const handleDecline = async () => {
+    const handleDecline = async () => {
     if (!selectedMeeting) return;
     try {
       await axios.post(`${URL}/api/meetings/decline`, { id: selectedMeeting.id });
@@ -77,7 +84,7 @@ function App() {
       <h1>Pending Approvals</h1>
 
       <div className="header-buttons">
-        <button className="schedule-btn" onClick={() => alert("This will navigate to the scheduling page.")}>
+        <button className="schedule-btn" onClick={() => navigate('/dashboard')}>
           📅 Schedule Meeting
         </button>
         <button className="simulate-btn" onClick={simulateMeetingRequest}>
@@ -148,18 +155,20 @@ function App() {
       {showApproved && (
         <div className="approved-panel">
           <div className="approved-header">
-            <h3>✅ Approved Meetings Today</h3>
+           <h3>✅ Approved Meetings Today</h3>
             <button className="close-approved" onClick={() => setShowApproved(false)}>Close</button>
           </div>
           <ul>
-            {approvedMeetings.filter(m =>
-              new Date(m.approvedAt).toDateString() === new Date().toDateString()
-            ).map((m, index) => (
-              <li key={index}>{m.title} by {m.organizer} at {m.time} ({m.date})</li>
-            ))}
-            {approvedMeetings.filter(m =>
-              new Date(m.approvedAt).toDateString() === new Date().toDateString()
-            ).length === 0 && <li>No approvals today.</li>}
+            {approvedMeetings
+              .filter(m => new Date(m.approvedAt).toDateString() === new Date().toDateString())
+              .map((m, index) => (
+                <li key={index}>
+                  {m.title} by {m.organizer} at {m.time} ({m.date})
+                </li>
+              ))}
+            {approvedMeetings.filter(m => new Date(m.approvedAt).toDateString() === new Date().toDateString()).length === 0 && (
+              <li>No approvals today.</li>
+            )}
           </ul>
         </div>
       )}
@@ -185,4 +194,4 @@ function App() {
   );
 }
 
-export default App;
+export default Home;
